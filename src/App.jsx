@@ -13,6 +13,8 @@ function App() {
 
   const [coordinates, setCoordinates] = useState({})
   const [bounds, setBounds] = useState({})
+  const [childClicked, setChildClicked] = useState(null)
+  const [isLoading, setisLoading] = useState(false)
 
   useEffect(() => {
 
@@ -22,7 +24,8 @@ function App() {
 
   useEffect(() => {
     console.log(coordinates)
-    getPlaces(bounds.sw, bounds.ne).then((data) => { console.log(data); setPlaces(data); })
+    setisLoading(true);
+    getPlaces(bounds.sw, bounds.ne).then((data) => { console.log(data); setPlaces(data); setisLoading(false) })
 
   }, [coordinates, bounds])
 
@@ -31,13 +34,16 @@ function App() {
       <Header />
       <Grid container style={{ width: '100%' }}>
         <Grid item xs={12} md={4} >
-          <List places={places} />
+          <List places={places} childClicked={childClicked} isLoading={isLoading} />
         </Grid>
         <Grid item xs={12} md={8} >
           <Map
             coordinates={coordinates}
             setCoordinates={setCoordinates}
             setBounds={setBounds}
+            places={places}
+            setChildClicked={setChildClicked}
+
           />
         </Grid>
       </Grid>

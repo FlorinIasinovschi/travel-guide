@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from "styled-components";
 import PlaceDetails from '../PlaceDetails/PlaceDetails';
-import axios from 'axios';
+import { CircularProgress } from '@mui/material';
+
 
 const Container = styled.div`
 /* background-color: #bbd6f5; */
@@ -10,8 +11,7 @@ align-items: center;
 justify-content: space-between;
 flex-direction: column;
 height: calc(100vh - 70px);
-padding : 5%;
-box-sizing : border-box;
+
 `
 
 const TopWrapper = styled.div`
@@ -20,12 +20,14 @@ display: flex;
 justify-content: space-between;
 height: auto;
 flex-direction: column;
+padding : 5%;
+box-sizing : border-box;
 `
 
 const Heading = styled.h2`
-  font-size: 2.6rem;
+  font-size: 2.4rem;
   font-weight: 400;
-  color: #1f1f1f;
+  color: #292929;
 `
 
 const SelectionContainer = styled.div`
@@ -72,7 +74,7 @@ const Option = styled.option`
 `
 
 const PlacesContainer = styled.div`
- background-color: #6183aa; 
+ /* background-color: #6183aa;  */
 display: flex;
 align-items: center;
 flex-direction: column;
@@ -83,13 +85,10 @@ box-sizing : border-box;
 overflow : scroll;
 `
 
-export default function List({ places }) {
+export default function List({ places, childClicked, isLoading }) {
 
   const [type, setType] = useState("restaurants")
   const [rating, setRating] = useState("all")
-
-
-
 
 
 
@@ -118,11 +117,10 @@ export default function List({ places }) {
         </SelectionContainer>
       </TopWrapper>
       <PlacesContainer>
-        {places?.map((el, idx) => (
-          <PlaceDetails name={el.name} key={idx} />
-
-        ))}
-
+        {isLoading ?
+          <CircularProgress style={{ fontSize: "4rem" }} /> :
+          <PlaceDetails places={places} childClicked={childClicked} />
+        }
       </PlacesContainer>
     </Container>
   )
