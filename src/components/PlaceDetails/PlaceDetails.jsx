@@ -54,7 +54,7 @@ const ImgContainer = styled.div`
 /* background-color: #bbd6f5; */
 width: 100%;
 height: 350px;
-${mobile({ height: "40%" })};
+${mobile({ height: "250px" })};
 
 `
 
