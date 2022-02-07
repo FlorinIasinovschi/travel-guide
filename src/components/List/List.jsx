@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { createRef, useEffect, useState } from 'react';
 import styled from "styled-components";
 import PlaceDetails from '../PlaceDetails/PlaceDetails';
 import { CircularProgress } from '@mui/material';
+import { mobile } from '../../responsive';
 
 
 const Container = styled.div`
@@ -11,6 +12,8 @@ align-items: center;
 justify-content: space-between;
 flex-direction: column;
 height: calc(100vh - 70px);
+${mobile({ height: "120vh" })};
+
 
 `
 
@@ -20,14 +23,16 @@ display: flex;
 justify-content: space-between;
 height: auto;
 flex-direction: column;
-padding : 5%;
+padding : 1% 5%;
 box-sizing : border-box;
 `
 
 const Heading = styled.h2`
-  font-size: 2.4rem;
+  font-size: 2rem;
   font-weight: 400;
   color: #292929;
+${mobile({ fontSize: "1.5rem" })};
+
 `
 
 const SelectionContainer = styled.div`
@@ -74,7 +79,7 @@ const Option = styled.option`
 `
 
 const PlacesContainer = styled.div`
- /* background-color: #6183aa;  */
+ /* background-color: #6183aa; */
 display: flex;
 align-items: center;
 flex-direction: column;
@@ -83,35 +88,79 @@ width: 100%;
 margin-top: 3%;
 box-sizing : border-box;
 overflow : scroll;
+${mobile({ width: "90%" })};
+
 `
 
-export default function List({ places, childClicked, isLoading }) {
+const Btn = styled.button`
+  font-size: 1.5rem;
+  border: none;
+  text-decoration: none;
+  box-sizing : border-box;
+  padding: 10px 25px;
+  border-radius: 5px;
+  background : #2070ca;
+  color: white;
+  cursor: pointer;
+  margin : 20px 15px 20px 0;
+  :hover {
+  background : #539df1;
 
-  const [type, setType] = useState("restaurants")
-  const [rating, setRating] = useState("all")
+  }
 
+`
 
+const WrapperContainer = styled.div`
+/* background-color: #bbd6f5; */
+display: flex;
+align-items: center;
+justify-content: space-between;
+flex-direction: column;
+width: 100%;
+box-sizing : border-box;
+padding : 0 5%;
+`
+
+const Warning = styled.h5`
+  font-size: .9rem;
+  font-weight: 500;
+  color: #747474;
+`
+
+export default function List({ places, childClicked, isLoading, fetchData, rating, setRating }) {
+
+  // const [type, setType] = useState("restaurants")
+
+  const [elRefs, setElRefs] = useState([])
+
+  // const selected = Number(childClicked)
+
+  useEffect(() => {
+    setElRefs((refs) => Array(places.length).fill().map((_, i) => refs[i] || createRef()));
+  }, [places]);
 
   return (
     <Container>
       <TopWrapper>
-        <Heading>{"Restaurants, Hotels & Attractions around you"}</Heading>
+        <Heading>{"Click to see restaurants around you."}</Heading>
+        <Btn onClick={fetchData} >Fetch Data</Btn>
+        <Warning>Due to a limited monthly amount of calls available , the elements displayed per call are reduced. Please be mindful of the number of api calls.</Warning>
         <SelectionContainer>
-          <SelectionBox>
+          {/* <SelectionBox>
             <SelectTitle>Type:</SelectTitle>
             <Selection value={type} onChange={(e) => setType(e.target.value)} >
               <Option value={"restaurants"} >Restaurants</Option>
               <Option value={"hotels"} >Hotels</Option>
               <Option value={"attractions"} >All</Option>
             </Selection>
-          </SelectionBox>
+          </SelectionBox> */}
           <SelectionBox>
             <SelectTitle>Rating:</SelectTitle>
             <Selection value={rating} onChange={(e) => setRating(e.target.value)} >
-              <Option value={0} >All</Option>
-              <Option value={3} >Above 3.00 Stars</Option>
-              <Option value={4} >Above 4.00 Stars</Option>
-              <Option value={4.5} >Above 4.50 Stars</Option>
+              <Option value={""} >All</Option>
+              <Option value={"3"} >3.00 Stars And Above</Option>
+              <Option value={"4"} >4.00 Stars And Above</Option>
+              <Option value={"4.5"} >4.50 Stars And Above</Option>
             </Selection>
           </SelectionBox>
         </SelectionContainer>
@@ -119,8 +168,11 @@ export default function List({ places, childClicked, isLoading }) {
       <PlacesContainer>
         {isLoading ?
           <CircularProgress style={{ fontSize: "4rem" }} /> :
-          <PlaceDetails places={places} childClicked={childClicked} />
-        }
+          places?.map((el, idx) => el.name && (
+            <WrapperContainer ref={elRefs[idx]} key={idx}>
+              <PlaceDetails el={el} refProp={elRefs[idx]} selected={Number(childClicked) === idx} />
+            </WrapperContainer>
+          ))}
       </PlacesContainer>
     </Container>
   )

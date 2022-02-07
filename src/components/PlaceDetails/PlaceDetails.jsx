@@ -2,17 +2,19 @@ import React, { createRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { LocationOn, LocalPhone } from '@mui/icons-material/';
 import { Rating, CircularProgress } from '@mui/material';
+import { mobile } from '../../responsive';
 
-const Container = styled.div`
-/* background-color: #bbd6f5; */
-display: flex;
-align-items: center;
-justify-content: space-between;
-flex-direction: column;
-width: 100%;
-box-sizing : border-box;
-padding : 0 5%;
-`
+// const Container = styled.div`
+// /* background-color: #bbd6f5; */
+// display: flex;
+// align-items: center;
+// justify-content: space-between;
+// flex-direction: column;
+// width: 100%;
+// box-sizing : border-box;
+// padding : 0 5%;
+// `
+
 const CardWrapper = styled.div`
 /* background-color: #be9e9e; */
 display: flex;
@@ -28,6 +30,8 @@ border-radius: 5px;
 overflow : hidden;
 box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 margin-top: 30px;
+
+
 `
 const InfoContainer = styled.div`
 display: flex;
@@ -43,11 +47,15 @@ const Title = styled.h5`
   font-size: 1.7rem;
   font-weight: 700;
   color: #242424;
+${mobile({ fontSize: "1.2rem" })};
+
 `
 const ImgContainer = styled.div`
 /* background-color: #bbd6f5; */
 width: 100%;
 height: 350px;
+${mobile({ height: "40%" })};
+
 `
 
 const Image = styled.img`
@@ -112,77 +120,67 @@ const Btn = styled.button`
 
 `
 
-export default function PlaceDetails({ places, childClicked }) {
+export default function PlaceDetails({ el, selected, refProp }) {
 
-  const [elRefs, setElRefs] = useState([])
 
-  const selected = Number(childClicked)
 
-  useEffect(() => {
-
-    const refs = Array(places?.length).fill().map((_, idx) => elRefs[idx] || createRef())
-
-    setElRefs(refs)
-
-  }, [places])
-
-  // if (selected === idx) elRefs[idx]?.current?.scrollIntoView({behaviour : "smooth", block : "start"})
+  if (selected) refProp?.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+  // if (selected) console.log(selected)
 
   return (
-    <Container>
-      {places?.map((el, idx) => el.name && (
-        <>
-          {selected === idx && elRefs[idx]?.current?.scrollIntoView({ behaviour: "smooth", block: "start" })}
+    // <Container>
+    // {places?.map((el, idx) => el.name && (
+    // <>
 
-          <CardWrapper refs={elRefs[idx]} key={idx} >
-            <ImgContainer>
-              <Image src={el.photo ? el.photo.images?.large.url : "/images/reastaurant-default.jpeg"} alt={el.name} />
-            </ImgContainer>
-            <InfoContainer>
-              <Title>{el.name}</Title>
-              <Section style={{ padding: "4px 0" }} >
-                <Rating name="read-only" value={Number(el.rating)} readOnly />
-                <Text>Out of {el.num_reveiws}  reviews</Text>
-              </Section>
+    <CardWrapper >
+      <ImgContainer>
+        <Image src={el.photo ? el.photo.images?.large.url : "/images/reastaurant-default.jpeg"} alt={el.name} />
+      </ImgContainer>
+      <InfoContainer>
+        <Title>{el.name}</Title>
+        <Section style={{ padding: "4px 0" }} >
+          <Rating name="read-only" value={Number(el.rating)} readOnly precision={0.1} />
+          <Text>Out of {Number(el.num_reviews)}  reviews</Text>
+        </Section>
 
-              <Section style={{ padding: "4px 0" }} >
-                <Text>Price</Text>
-                <Text>{el.price_level ? el.price_level : "Unknown"}</Text>
-              </Section>
-              <Section style={{ padding: "4px 0", marginBottom: "10px" }}>
-                <Text>Ranking</Text>
-                <Text>{el.ranking ? el.ranking : "Unknown"}</Text>
-              </Section>
-              {el.awards?.map((award, idx) => idx < 3 && (
-                <Section >
-                  <IconImg src={award.images?.small} />
-                  <Text style={{ fontSize: ".8rem", color: "grey" }}>{award.display_name}</Text>
+        <Section style={{ padding: "4px 0" }} >
+          <Text>Price</Text>
+          <Text>{el.price_level ? el.price_level : "Unknown"}</Text>
+        </Section>
+        <Section style={{ padding: "4px 0", marginBottom: "10px" }}>
+          <Text>Ranking</Text>
+          <Text>{el.ranking ? el.ranking : "Unknown"}</Text>
+        </Section>
+        {el.awards?.map((award, idx) => idx < 3 && (
+          <Section key={idx} >
+            <IconImg src={award.images?.small} />
+            <Text style={{ fontSize: ".8rem", color: "grey" }}>{award.display_name}</Text>
 
-                </Section>
-              ))}
-              <FoodTagContainer >
-                {el.cuisine?.map((tag) => (
-                  <FoodTag key={tag.key}>{tag.name}</FoodTag>
-                ))}
-              </FoodTagContainer>
-              <Section style={{ padding: "4px 0" }} >
-                <LocationOn style={{ fontSize: "1.3rem", color: "#4b4b4b" }} />
-                <Text style={{ fontSize: ".7rem", color: "grey" }}  >{el.address ? el.address : "Unknown"}</Text>
-              </Section>
-              <Section style={{ padding: "4px 0" }} >
-                <LocalPhone style={{ fontSize: "1.3rem", color: "#4b4b4b" }} />
-                <Text style={{ fontSize: ".7rem", color: "grey" }}  >{el.phone ? el.phone : "Unknown"}</Text>
-              </Section>
-              <Section style={{ justifyContent: "flex-start" }} >
-                {el.web_url && <Btn onClick={() => window.open(el.web_url, "_blank")}  >Trip Advisor</Btn>}
-                {el.website && <Btn onClick={() => window.open(el.website, "_blank")} >Website</Btn>}
-              </Section>
+          </Section>
+        ))}
+        <FoodTagContainer >
+          {el.cuisine?.map((tag) => (
+            <FoodTag key={tag.key}>{tag.name}</FoodTag>
+          ))}
+        </FoodTagContainer>
+        <Section style={{ padding: "4px 0" }} >
+          <LocationOn style={{ fontSize: "1.3rem", color: "#4b4b4b" }} />
+          <Text style={{ fontSize: ".7rem", color: "grey" }}  >{el.address ? el.address : "Unknown"}</Text>
+        </Section>
+        <Section style={{ padding: "4px 0" }} >
+          <LocalPhone style={{ fontSize: "1.3rem", color: "#4b4b4b" }} />
+          <Text style={{ fontSize: ".7rem", color: "grey" }}  >{el.phone ? el.phone : "Unknown"}</Text>
+        </Section>
+        <Section style={{ justifyContent: "flex-start" }} >
+          {el.web_url && <Btn onClick={() => window.open(el.web_url, "_blank")}  >Trip Advisor</Btn>}
+          {el.website && <Btn onClick={() => window.open(el.website, "_blank")} >Website</Btn>}
+        </Section>
 
-              {console.log(el)}
-            </InfoContainer>
-          </CardWrapper>
-        </>
-      ))}
-    </Container>
+        {/* {console.log(el)} */}
+      </InfoContainer>
+    </CardWrapper>
+    // </>
+    // ))}
+    // </Container>
   )
 }
