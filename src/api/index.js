@@ -12,7 +12,7 @@ export const getPlaces = async (sw, ne) => {
         tr_latitude: ne.lat,
         bl_longitude: sw.lng,
         tr_longitude: ne.lng,
-        limit: "5",
+        limit: "10",
 
       },
       headers: {
